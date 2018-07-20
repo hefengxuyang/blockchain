@@ -51,10 +51,25 @@
 
   UTXO模型的合约也有适合的场景，例如多签合约。如果用账户模型的以太坊来实现这种合约[MultiSigWallet.sol](https://github.com/gnosis/MultiSigWallet/blob/master/contracts/MultiSigWallet.sol)，其复杂度也是非常高的。
 
-  我们还可以实现基于UTXO模型的多签（multisigs）托管服务。甲方试图从乙方购买商品，并将该商品的价格锁定为与甲方、乙方和托管主持人C签订的托管合同（3个中的2个）。A和B（买方和卖方）可以同意将资金转移到他们自己（并且不必支付托管费），或者如果其中一方没有合作，他们中的一方可以援引C的帮助。
+  我们还可以实现基于UTXO模型的多签（multisigs）托管服务。甲方试图从乙方购买商品，并将该商品的价格锁定为与甲方、乙方和托管主持人C签订的托管合同（3个中的2个）。A和B（买方和卖方）可以同意将资金转移到他们自己（并且不必支付托管费），或者如果其中一方没有合作，他们中的一方可以援引C的帮助。采用chain的ivy合约语言的实现如下：
+  ```
+  contract Escrow(agent: PublicKey,
+                sender: Program,
+                recipient: Program) locks value {
+    clause approve(sig: Signature) {
+      verify checkTxSig(agent, sig)
+      lock value with recipient
+    }
+    clause reject(sig: Signature) {
+      verify checkTxSig(agent, sig)
+      lock value with sender
+    }
+  }
+  ```
 
   不论UTXO模型还是账户模型的区块链系统，智能合约能够实现什么样的应用，其本质取决于OP指令集及其数据存储问题，而指令集是实现智能合约的功能集的基础。
 
-
+### 合约模型
+  
 
 
